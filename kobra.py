@@ -121,10 +121,25 @@ class Snake:
         self.got_apple = False
 
     def _set_random_direction(self):
-        """Choose one of the four valid grid movement directions."""
-        self.xmov, self.ymov = random.choice(
-            ((0, -1), (0, 1), (-1, 0), (1, 0))
-        )
+        """Choose a direction that leaves a cell of space at the walls."""
+        directions = ((0, -1), (0, 1), (-1, 0), (1, 0))
+        safe_directions = [
+            (xmov, ymov)
+            for xmov, ymov in directions
+            if (
+                not xmov
+                or GRID_SIZE
+                <= self.x + xmov * GRID_SIZE
+                <= WIDTH - 2 * GRID_SIZE
+            )
+            and (
+                not ymov
+                or GRID_SIZE
+                <= self.y + ymov * GRID_SIZE
+                <= HEIGHT - 2 * GRID_SIZE
+            )
+        ]
+        self.xmov, self.ymov = random.choice(safe_directions)
 
     def update(self):
         """Check collisions, restart if needed, and move the snake."""
