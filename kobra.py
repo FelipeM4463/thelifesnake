@@ -111,11 +111,7 @@ class Snake:
     def __init__(self):
         self.x, self.y = GRID_SIZE, GRID_SIZE
 
-        # Each movement component tells how many grid cells to advance:
-        # -1 for left/up, 0 for no movement, and 1 for right/down.
-        # Starting with (1, 0) makes the snake move to the right.
-        self.xmov = 1
-        self.ymov = 0
+        self._set_random_direction()
 
         # Rect stores a segment's position and size. The tail is a list
         # of earlier head positions, with the newest segment first.
@@ -123,6 +119,12 @@ class Snake:
         self.tail = []
         self.alive = True
         self.got_apple = False
+
+    def _set_random_direction(self):
+        """Choose one of the four valid grid movement directions."""
+        self.xmov, self.ymov = random.choice(
+            ((0, -1), (0, 1), (-1, 0), (1, 0))
+        )
 
     def update(self):
         """Check collisions, restart if needed, and move the snake."""
@@ -148,12 +150,11 @@ class Snake:
             pygame.draw.rect(arena, DEAD_HEAD_COLOR, snake.head)
             center_prompt("Game Over", "Press to restart")
 
-            # Restore the starting position and direction.
+            # Restore the starting position and choose a new direction.
             self.x, self.y = GRID_SIZE, GRID_SIZE
             self.head = pygame.Rect(self.x, self.y, GRID_SIZE, GRID_SIZE)
             self.tail = []
-            self.xmov = 1
-            self.ymov = 0
+            self._set_random_direction()
             self.alive = True
             self.got_apple = False
 
