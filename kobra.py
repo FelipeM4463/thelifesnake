@@ -111,7 +111,8 @@ class Snake:
     """Track the snake's segments, movement, and collisions."""
 
     def __init__(self):
-        self.x, self.y = GRID_SIZE, GRID_SIZE
+        self.x = random.randrange(2 * GRID_SIZE, WIDTH - 2 * GRID_SIZE, GRID_SIZE)
+        self.y = random.randrange(2 * GRID_SIZE, HEIGHT - 2 * GRID_SIZE, GRID_SIZE)
 
         self._set_random_direction()
 
@@ -123,23 +124,14 @@ class Snake:
         self.got_apple = False
 
     def _set_random_direction(self):
-        """Choose a direction that leaves a cell of space at the walls."""
+        """Choose a direction with at least half the grid as clearance."""
         directions = ((0, -1), (0, 1), (-1, 0), (1, 0))
+        clearance = min(WIDTH, HEIGHT) // GRID_SIZE // 2 * GRID_SIZE
         safe_directions = [
             (xmov, ymov)
             for xmov, ymov in directions
-            if (
-                not xmov
-                or GRID_SIZE
-                <= self.x + xmov * GRID_SIZE
-                <= WIDTH - 2 * GRID_SIZE
-            )
-            and (
-                not ymov
-                or GRID_SIZE
-                <= self.y + ymov * GRID_SIZE
-                <= HEIGHT - 2 * GRID_SIZE
-            )
+            if 0 <= self.x + xmov * clearance < WIDTH
+            and 0 <= self.y + ymov * clearance < HEIGHT
         ]
         self.xmov, self.ymov = random.choice(safe_directions)
 
@@ -167,8 +159,9 @@ class Snake:
             pygame.draw.rect(arena, DEAD_HEAD_COLOR, snake.head)
             center_prompt("Game Over", "Press to restart")
 
-            # Restore the starting position and choose a new direction.
-            self.x, self.y = GRID_SIZE, GRID_SIZE
+            # Choose a new random position and direction.
+            self.x = random.randrange(2 * GRID_SIZE, WIDTH - 2 * GRID_SIZE, GRID_SIZE)
+            self.y = random.randrange(2 * GRID_SIZE, HEIGHT - 2 * GRID_SIZE, GRID_SIZE)
             self.head = pygame.Rect(self.x, self.y, GRID_SIZE, GRID_SIZE)
             self.tail = []
             self._set_random_direction()
